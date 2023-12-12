@@ -17,7 +17,7 @@ Cambiando por su puesto el puerto por el suyo donde se este conectando el micro 
 
 Este es el codigo .ino (Arduino file) utilizado junto con el proyecto 
 
-`
+```
 const int Echo = 2;
 const int Trigger = 4;
 
@@ -46,4 +46,4 @@ void loop() {
   delay(100);          //Hacemos una pausa de 100ms
 }
 
-`
+```
