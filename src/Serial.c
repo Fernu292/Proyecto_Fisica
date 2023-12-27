@@ -43,12 +43,28 @@ void SerialReaderLinux(char *argv[]){
         printf("\nConnecting to: %s\n", port);
 
         // Opening serial port 
-        
         int serial_port = open(port, O_RDWR);
 
         if(serial_port < 0){
             printf("\nError %i from open %s, returned %s\n", errno, port, strerror(errno));
         }
+
+        // Configuration Setup
+        
+        // Create a new termios struct called tty by convention
+        
+        struct termios tty;
+        
+        // Read in existing settings and handle any error 
+
+        if(tcgetattr(serial_port, &tty) != 0){
+            printf("Error in %i from tcgetattr: %s\n", errno, stderror(errno));
+            return 1;
+        }
+        
+        // Config the cflags and modes for I/O stream in serial port 
+        
+        
     }else {
         // A port was not selected
         printf("Invalid port, please type a port for the conection\n");
