@@ -74,8 +74,8 @@ int main(int argc, char* argv[]){
 
         float value = readSerialPort(serial_port);
 
-        if(value >= 0){
-            printf("Distance: %.f cm\n", value);
+        if(value > 0){
+            printf("Distance: %.3f cm\n", value);
         }
     }
 
