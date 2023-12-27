@@ -1,4 +1,4 @@
-
+//#include <ncurses.h>
 #include <stdio.h>
 
 int main(int argc, char **argv){
@@ -10,5 +10,6 @@ int main(int argc, char **argv){
     #else
         printf("Sorry your SO is not listed\n");
     #endif
+        getchar();
         return 0;
 }
