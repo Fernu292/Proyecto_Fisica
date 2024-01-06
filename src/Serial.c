@@ -2,6 +2,17 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef __linux__
+    // GNU/Linux Headers
+#include <fcntl.h>   
+#include <errno.h>
+#include <termios.h>
+#include <unistd.h>
+
+#endif
+
+
+
 int SerialReaderLinux(char *argv[]);
 void SerialReaderWindows(char *argv[]);
 
@@ -117,7 +128,7 @@ int SerialReaderLinux(char *argv[]){
                 printf("Empuje: %.3f N\n", value);
             }
 
-            if(value <= - 2000.0) {
+            if(value <= - 200) {
                 break;
             }
         }
