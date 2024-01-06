@@ -28,7 +28,7 @@ float readSerialPort(int serial_port) {
 int main(int argc, char* argv[]){
     
     // Open the serial port
-    int serial_port = open("/dev/ttyACM0", O_RDWR);
+    int serial_port = open("/dev/ttyUSB0", O_RDWR);
 
     // First we have to check for any error open the serial port 
 
@@ -77,7 +77,7 @@ int main(int argc, char* argv[]){
         if(value > 0){
             printf("Distance: %.3f cm\n", value);
         }
-    }
+}
 
     printf("Exit the program ...\n");
 

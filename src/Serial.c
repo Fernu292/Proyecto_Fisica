@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-void SerialReaderLinux(char *argv[]);
+int SerialReaderLinux(char *argv[]);
 void SerialReaderWindows(char *argv[]);
 
 int main(int argc, char *argv []) {
@@ -19,7 +19,7 @@ int main(int argc, char *argv []) {
         return 0;
 }
 
-void SerialReaderLinux(char *argv[]){
+int SerialReaderLinux(char *argv[]){
     printf("\nWorking on Linux system...\n");
     
     // GNU/Linux Headers
@@ -27,8 +27,25 @@ void SerialReaderLinux(char *argv[]){
     #include <errno.h> // Error integer and stderror() function
     #include <termios.h> // Contains POSIX terminal control definitions
     #include <unistd.h> // write(), read(), close()
-    
+
     printf("Including Linux libraries...\n");
+
+    float readSerialPort(int serial_port){
+        char buffer[256];
+
+        memset(buffer, 0, sizeof(buffer));
+
+        int num_bytes = read(serial_port, &buffer, sizeof(buffer) -1);
+
+        if(num_bytes < 0) {
+            printf("Error %i from read: %s", errno, strerror(errno));
+            return -1;
+        }
+
+        float value = atof(buffer);
+
+        return value;
+    };
     
     size_t port_size = strlen(argv[1]); // sizeof(argv[1][0]) ;
 
@@ -37,16 +54,14 @@ void SerialReaderLinux(char *argv[]){
         printf("The selected port is: %s\n", argv[1]);
         
         // Declaration and concatenation for the asigned port 
-        char port[port_size+3]; 
-        strcat(port, argv[1]);
-
-        printf("\nConnecting to: %s\n", port);
+        // TODO: Fix the string problem
+        printf("\nConnecting to: %s\n", argv[1]);
 
         // Opening serial port 
-        int serial_port = open(port, O_RDWR);
+        int serial_port = open(argv[1], O_RDWR);
 
         if(serial_port < 0){
-            printf("\nError %i from open %s, returned %s\n", errno, port, strerror(errno));
+            printf("\nError %i from open %s, returned %s\n", errno, argv[1], strerror(errno));
         }
 
         // Configuration Setup
@@ -58,13 +73,60 @@ void SerialReaderLinux(char *argv[]){
         // Read in existing settings and handle any error 
 
         if(tcgetattr(serial_port, &tty) != 0){
-            printf("Error in %i from tcgetattr: %s\n", errno, stderror(errno));
+            printf("Error in %i from tcgetattr: %s\n", errno, strerror(errno));
             return 1;
         }
         
         // Config the cflags and modes for I/O stream in serial port 
         
+        tty.c_cflag &= ~PARENB; // Clear parity bit, disabling parity
+        tty.c_cflag &= ~CSTOPB; // Clear stdio field
+        tty.c_cflag &= ~CSIZE; // Clear all bits that set the data size
+        tty.c_cflag |= CS8;
+        tty.c_cflag |= CREAD | CLOCAL;
         
+        // Config the lflags 
+
+        tty.c_lflag &= ~ICANON;
+        tty.c_lflag &= ~ECHO; // Disable echo
+        tty.c_lflag &= ~ECHOE; // Disable erasure
+        tty.c_lflag &= ~ECHONL; // Disable new-line echo
+        tty.c_lflag &= ~ISIG; // Disable interpolation of INTR, QUIT and SUSP
+        tty.c_lflag &= ~(IXON | IXOFF | IXANY ); // Turn off s/w flow ctrl
+        tty.c_lflag &= ~(IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL);
+
+        // Config the oflags 
+        
+        tty.c_oflag &= ~OPOST;
+        tty.c_oflag &= ~ONLCR;
+
+        tty.c_cc[VTIME] = 10;
+        tty.c_cc[VMIN] = 0;
+
+        // Set the in/out baund rate
+
+        cfsetispeed(&tty, B9600);
+        cfsetospeed(&tty, B9600);
+        
+        // Reading the serial port 
+
+        while(1){
+            float value = readSerialPort(serial_port);
+
+            if (value > 0 ){
+                printf("Empuje: %.3f N\n", value);
+            }
+
+            if(value <= - 2000.0) {
+                break;
+            }
+        }
+
+        printf("Exit the program ...\n");
+
+        close(serial_port);
+        
+
     }else {
         // A port was not selected
         printf("Invalid port, please type a port for the conection\n");
