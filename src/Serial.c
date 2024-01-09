@@ -3,7 +3,7 @@
 #include <string.h>
 
 #ifdef __linux__
-    // GNU/Linux Headers
+// GNU/Linux Headers
 #include <fcntl.h>   
 #include <errno.h>
 #include <termios.h>
@@ -11,9 +11,7 @@
 
 #endif
 
-
-
-int SerialReaderLinux(char *argv[]);
+void SerialReaderLinux(char *argv[]);
 void SerialReaderWindows(char *argv[]);
 
 int main(int argc, char *argv []) {
@@ -30,14 +28,8 @@ int main(int argc, char *argv []) {
         return 0;
 }
 
-int SerialReaderLinux(char *argv[]){
+void SerialReaderLinux(char *argv[]){
     printf("\nWorking on Linux system...\n");
-    
-    // GNU/Linux Headers
-    #include <fcntl.h> // Contains file controls like O_RDWR
-    #include <errno.h> // Error integer and stderror() function
-    #include <termios.h> // Contains POSIX terminal control definitions
-    #include <unistd.h> // write(), read(), close()
 
     printf("Including Linux libraries...\n");
 
@@ -48,7 +40,7 @@ int SerialReaderLinux(char *argv[]){
 
         int num_bytes = read(serial_port, &buffer, sizeof(buffer) -1);
 
-        if(num_bytes < 0) {
+        if(num_bytes <= 0) {
             printf("Error %i from read: %s", errno, strerror(errno));
             return -1;
         }
@@ -85,7 +77,6 @@ int SerialReaderLinux(char *argv[]){
 
         if(tcgetattr(serial_port, &tty) != 0){
             printf("Error in %i from tcgetattr: %s\n", errno, strerror(errno));
-            return 1;
         }
         
         // Config the cflags and modes for I/O stream in serial port 
@@ -122,14 +113,10 @@ int SerialReaderLinux(char *argv[]){
         // Reading the serial port 
 
         while(1){
-            float value = readSerialPort(serial_port);
+            float value = readSerialPort(serial_port)/1000.0;
 
-            if (value > 0 ){
+            if(value > 0){
                 printf("Empuje: %.3f N\n", value);
-            }
-
-            if(value <= - 200) {
-                break;
             }
         }
 

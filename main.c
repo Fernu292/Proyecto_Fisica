@@ -15,7 +15,7 @@ float readSerialPort(int serial_port) {
 
     int num_bytes = read(serial_port, &buffer, sizeof(buffer)-1);
 
-    if(num_bytes < 0){
+    if(num_bytes <= 0){
         //Catch read error
         printf("Error %i from read: %s", errno, strerror(errno));
         return -1;
@@ -68,16 +68,16 @@ int main(int argc, char* argv[]){
     cfsetispeed(&tty, B9600);
     cfsetospeed(&tty, B9600);
 
-    printf("Press enter to read serial port and q to exit\n");
+    // printf("Press enter to read serial port and q to exit\n");
 
     while(1) {
 
         float value = readSerialPort(serial_port);
 
         if(value > 0){
-            printf("Distance: %.3f cm\n", value);
+            printf("Empuje: %.3f N\n", value);
         }
-}
+    }
 
     printf("Exit the program ...\n");
 
