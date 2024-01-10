@@ -34,7 +34,7 @@ void SerialReaderLinux(char *argv[]){
     printf("Including Linux libraries...\n");
 
     float readSerialPort(int serial_port){
-        char buffer[256];
+        char buffer[8];
 
         memset(buffer, 0, sizeof(buffer));
 

@@ -15,10 +15,15 @@ void setup(){
 }
 
 void loop(){
-
+    
     Time ++;
-    Serial.println(Empuje(Time/100));
-    delay(10);
+    float empuje = Empuje(Time/10) / 100;
+    if(empuje > 0){
+      Serial.println( empuje);
+    }else {
+      Serial.println(0.0);
+    }
+    delay(100);
 }
 
 
